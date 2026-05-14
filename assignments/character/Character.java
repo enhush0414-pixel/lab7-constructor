@@ -1,5 +1,4 @@
 
-
 import java.util.Random;
 
 public class Character {
@@ -10,40 +9,29 @@ public class Character {
     private int maxMp;
     private int gold;
 
-    // ==================== 🟢 CORE (60 оноо) ====================
-
-    /**
-     * 1. Custom stats constructor (Үндсэн constructor)
-     * Бусад constructor-ууд үүнийг this(...) ашиглан дуудна.
-     */
-    public Character(String name, int hp, int mp) {
+    // Үндсэн constructor-т gold-ыг нэмж өгснөөр Builder утгаа оноож чадна
+    public Character(String name, int hp, int mp, int gold) {
         this.name = name;
         this.hp = hp;
         this.maxHp = hp;
         this.mp = mp;
         this.maxMp = mp;
-        this.gold = 0;
+        this.gold = gold;
     }
 
-    /**
-     * 2. Default constructor
-     * Зөвхөн нэр авч, hp=100, mp=50 гэж үндсэн constructor руу дамжуулна.
-     */
+    // Бусад constructor-ууд одоо 4 параметртэй constructor-ыг дуудна
+    public Character(String name, int hp, int mp) {
+        this(name, hp, mp, 0);
+    }
+
     public Character(String name) {
-        this(name, 100, 50); // Constructor Chaining
+        this(name, 100, 50, 0);
     }
 
-    /**
-     * 3. Copy constructor
-     * Өөр Character объектын утгуудыг хуулж шинэ объект үүсгэнэ.
-     */
     public Character(Character other) {
-        this.name = other.name;
-        this.hp = other.hp;
+        this(other.name, other.hp, other.mp, other.gold);
         this.maxHp = other.maxHp;
-        this.mp = other.mp;
         this.maxMp = other.maxMp;
-        this.gold = other.gold;
     }
 
     // Getters
@@ -54,26 +42,24 @@ public class Character {
     public int getMaxMp() { return maxMp; }
     public int getGold() { return gold; }
 
-    // ==================== 🟡 STRETCH (30 оноо) ====================
-
+    // Static Factory Methods
     public static Character createWarrior(String name) {
-        return new Character(name, 150, 20);
+        return new Character(name, 150, 20, 0);
     }
 
     public static Character createMage(String name) {
-        return new Character(name, 80, 120);
+        return new Character(name, 80, 120, 0);
     }
 
     public static Character random(String name) {
         Random rand = new Random();
-        // hp: 50..150, mp: 20..100
         int rHp = rand.nextInt(101) + 50;
         int rMp = rand.nextInt(81) + 20;
-        return new Character(name, rHp, rMp);
+        return new Character(name, rHp, rMp, 0);
     }
 }
 
-// ==================== 🔴 BONUS (10 оноо) ====================
+// ==================== 🔴 BONUS (Зассан Builder) ====================
 
 class CharacterBuilder {
     private String name = "Hero";
@@ -83,7 +69,7 @@ class CharacterBuilder {
 
     public CharacterBuilder name(String name) {
         this.name = name;
-        return this; // Fluent interface
+        return this;
     }
 
     public CharacterBuilder hp(int hp) {
@@ -102,9 +88,7 @@ class CharacterBuilder {
     }
 
     public Character build() {
-        Character c = new Character(name, hp, mp);
-        // Gold талбарыг Character дотор setter-гүй тул reflection-гүйгээр
-        // эсвэл нэмэлт логикоор оноож болно. (Энд зориудаар Character-т gold оноох логик хэрэгтэй)
-        return c;
+        // Одоо gold утгыг constructor руу дамжуулж байна
+        return new Character(name, hp, mp, gold);
     }
 }
